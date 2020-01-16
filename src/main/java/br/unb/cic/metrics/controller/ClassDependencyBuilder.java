@@ -18,11 +18,17 @@ public class ClassDependencyBuilder {
 
     private static final String PATTERN__COMMIT = "commit: (\\w++)";
     private static final String PATTERN__COMPONENT_COARSE_GRAINED =  "(.*)\\.java\\/\\[CN]\\/(\\w++)\\/.*";
+    private static final String PATTERN__COMPONENT_FINE_GRAINED =  "(.*)\\.java\\/\\[CN]\\/(\\w++)\\/(\\[CT]|\\[MT])\\/(.*)\\/.*";
 
-    enum Mode {FINE_GRAINED, COARSE_GRAINED};
+
+    public enum Mode {FINE_GRAINED, COARSE_GRAINED};
 
     private Mode mode = Mode.COARSE_GRAINED;
+
     private String projectName;
+
+    private String patternComponent = PATTERN__COMPONENT_COARSE_GRAINED;
+
     private int minSupportCount = DEFAULT_MIN_SUPPORT_COUNT;
     private double minConfidence = DEFAULT_MIN_CONFIDENCE;
 
@@ -32,6 +38,9 @@ public class ClassDependencyBuilder {
     public void loadDependencies(String logFile) throws Exception {
         System.out.println("Loading commit history");
         Stopwatch stopwatch = Stopwatch.createStarted();
+
+        patternComponent = mode == Mode.FINE_GRAINED ? PATTERN__COMPONENT_FINE_GRAINED :
+                PATTERN__COMPONENT_COARSE_GRAINED;
 
         components = new HashMap<>();
         componentChanges = new HashMap<>();
@@ -45,7 +54,7 @@ public class ClassDependencyBuilder {
         int countCommit = 0;
 
         final Pattern commitPattern = Pattern.compile(PATTERN__COMMIT);
-        final Pattern classPattern = Pattern.compile(PATTERN__COMPONENT_COARSE_GRAINED);
+        final Pattern classPattern = Pattern.compile(patternComponent);
         String hash = "";
 
         for(String s : log) {
@@ -62,7 +71,8 @@ public class ClassDependencyBuilder {
             else {
                 m = classPattern.matcher(s);
                 if (m.matches()) {
-                    changeSet.get(hash).add(m.group(2));
+                    changeSet.get(hash).add(mode == Mode.COARSE_GRAINED ? m.group(2) :
+                            m.group(2) + "." + m.group(4));
                 }
             }
         }

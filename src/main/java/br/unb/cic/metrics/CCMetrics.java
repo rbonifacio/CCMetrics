@@ -11,13 +11,14 @@ public class CCMetrics {
         try {
             if(args.length < 2) {
                 System.out.println("Invalid command options. Please, try java CCMetrics <logfile> <outputdir>");
-                System.out.println("The log file must have been generated using the following command: " +
+                System.out.println("The log file must have been generated using the following command (in a Kenja repository): " +
                         " git log --name-only --oneline --pretty='%ncommit: %H' > log.txt");
 
                 System.exit(1);
             }
 
             ClassDependencyBuilder builder = new ClassDependencyBuilder();
+            builder.setMode(ClassDependencyBuilder.Mode.FINE_GRAINED);
             builder.loadDependencies(args[0]);
             builder.export(new DefaultPrinter(args[1]));
         }
