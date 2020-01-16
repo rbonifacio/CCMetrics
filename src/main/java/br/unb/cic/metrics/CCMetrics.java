@@ -10,9 +10,9 @@ public class CCMetrics {
     public static void main(String args[]) {
         try {
             if(args.length < 2) {
-                System.out.println("Invalid command options. Please, try java CCMetrics <logfile> <outputdir>");
+                System.out.println("Invalid command options. Please, try java CCMetrics <logfile> <outputdir>\n");
                 System.out.println("The log file must have been generated using the following command (in a Kenja repository): " +
-                        " git log --name-only --oneline --pretty='%ncommit: %H' > log.txt");
+                        "\n    git log --name-only --oneline --pretty='%ncommit: %H' > log.txt");
 
                 System.exit(1);
             }
