@@ -26,7 +26,7 @@ to execute these commands.
 
 ```console
 $ git log --name-only --oneline --pretty='%ncommit: %H' > log.txt
-$ java -jar CCMetrics <log.txt> <outdir> 
+$ java -jar CCMetrics --input=<log.txt> --output=<outdir> (--mode=(c|f))? 
 ```
 
 ## Output
