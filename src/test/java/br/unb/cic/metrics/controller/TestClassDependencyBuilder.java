@@ -2,7 +2,6 @@ package br.unb.cic.metrics.controller;
 
 import br.unb.cic.metrics.model.DependencyInfo;
 import org.junit.Assert;
-import org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -41,12 +40,12 @@ public class TestClassDependencyBuilder {
     @Test
     public void testSetOfCoupledClasses() {
         Set<String> expected = new HashSet<>((Arrays.asList(new String[]{"c2", "c5"})));
-        Assert.assertEquals(expected, mgr.setOfCoupledClasses("c1", 3));
+        Assert.assertEquals(expected, mgr.setOfCoupledComponents("c1", 3));
     }
 
     @Test
     public void testNumberOfCoupledClasses() {
-        Assert.assertEquals(2, mgr.numberOfCoupledClasses("c1", 3));
+        Assert.assertEquals(2, mgr.numberOfCoupledComponents("c1", 3));
     }
 
     @Test

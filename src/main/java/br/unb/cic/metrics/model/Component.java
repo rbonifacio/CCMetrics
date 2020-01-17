@@ -1,6 +1,7 @@
 package br.unb.cic.metrics.model;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Component {
 
@@ -90,6 +91,31 @@ public class Component {
             return new DependencyInfo(name, d.target, d.supportCount, (double)d.supportCount/changes);
         }
         return null;
+    }
+
+
+    public Set<String> setOfCoupledComponents(int minSupportCount) {
+        return listDependencyInfo().stream()
+                .filter(d -> d.getSupportCount() >= minSupportCount)
+                .map(f -> f.getTarget())
+                .collect(Collectors.toSet());
+    }
+
+    public int numberOfCoupledComponents(int minSupportCount) {
+        List<String> classes = listDependencies();
+        if(classes != null) {
+            return classes.size();
+        }
+        return 0;
+    }
+
+    public int sumOfCoupling(int minSupportCount) {
+        List<DependencyInfo> deps = listDependencyInfo();
+
+        return deps.stream()
+                .filter(d -> d.getSupportCount() >= minSupportCount)
+                .map(f -> f.getSupportCount())
+                .reduce(0, Integer::sum);
     }
 
     @Override

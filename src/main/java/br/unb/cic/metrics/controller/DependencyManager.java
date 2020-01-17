@@ -11,7 +11,6 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class DependencyManager {
 
@@ -136,31 +135,24 @@ public class DependencyManager {
         return null;
     }
 
-    public Set<String> setOfCoupledClasses(String c) {
-        return setOfCoupledClasses(c, minSupportCount);
+    public Set<String> setOfCoupledComponents(String c) {
+        return setOfCoupledComponents(c, minSupportCount);
     }
-    
-    public Set<String> setOfCoupledClasses(String c, int minSupportCount) {
-        if(components.containsKey(c)) {
-            Component cmp =  components.get(c);
 
-            return cmp.listDependencyInfo().stream()
-                    .filter(d -> d.getSupportCount() >= minSupportCount)
-                    .map(f -> f.getTarget())
-                    .collect(Collectors.toSet());
+    public Set<String> setOfCoupledComponents(String c, int minSupportCount) {
+        if(components.containsKey(c)) {
+            return components.get(c).setOfCoupledComponents(minSupportCount);
         }
         return null;
     }
 
-    public int numberOfCoupledClasses(String c){
-        return numberOfCoupledClasses(c, minSupportCount);
+    public int numberOfCoupledComponents(String c){
+        return numberOfCoupledComponents(c, minSupportCount);
     }
 
-    public int numberOfCoupledClasses(String c, int minSupportCount) {
-        Set<String> classes = setOfCoupledClasses(c, minSupportCount);
-
-        if(classes != null) {
-            return classes.size();
+    public int numberOfCoupledComponents(String c, int minSupportCount) {
+        if(components.containsKey(c)) {
+            return components.get(c).numberOfCoupledComponents(minSupportCount);
         }
         return 0;
     }
@@ -171,12 +163,7 @@ public class DependencyManager {
 
     public int sumOfCoupling(String c, int minSupportCount) {
         if(components.containsKey(c)) {
-            List<DependencyInfo> deps = components.get(c).listDependencyInfo();
-
-            return deps.stream()
-                    .filter(d -> d.getSupportCount() >= minSupportCount)
-                    .map(f -> f.getSupportCount())
-                    .reduce(0, Integer::sum);
+            components.get(c).sumOfCoupling(minSupportCount);
         }
         return 0;
     }
