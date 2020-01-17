@@ -9,11 +9,12 @@ import java.util.List;
 import java.util.Set;
 
 public class DefaultPrinter implements PrettyPrinter {
-    private PrintStream out1, out2;
+    private PrintStream out1, out2, out3;
 
     public DefaultPrinter() {
         out1 = System.out;
         out2 = System.out;
+        out3 = System.out;
     }
 
     public DefaultPrinter(String file) {
@@ -22,6 +23,7 @@ public class DefaultPrinter implements PrettyPrinter {
             if(f.exists() && f.isDirectory()) {
                 out1 = new PrintStream(f + "/change-history.csv");
                 out2 = new PrintStream(f + "/dependencies.csv");
+                out3 = new PrintStream(f + "/metrics.csv");
             }
             else {
                 defaultInit();
@@ -37,22 +39,24 @@ public class DefaultPrinter implements PrettyPrinter {
     public void defaultInit() {
         out1 = System.out;
         out2 = System.out;
+        out3 = System.out;
     }
 
     @Override
     public void exportComponentChanges(HashMap<String, Set<String>> changeSet) {
         changeSet.keySet().forEach(k -> {
-            changeSet.get(k).forEach(c -> out1.println(String.format("%s, %s", k, c)));
+            changeSet.get(k).forEach(c -> out1.println(String.format("%s; %s", k, c)));
         });
     }
 
     @Override
-    public void exportComponentDependencies(HashMap<String, Component> components) {
+    public void exportComponentDependencies(HashMap<String, Component> components, int minSupportCount) {
         components.values().forEach(c -> {
             List<String> deps = c.listDependencies();
             if(deps.size() > 0) {
                 deps.forEach(s -> out2.println(s));
             }
+            out3.println(String.format("%s; %d; %d", c.getName(), c.numberOfCoupledComponents(minSupportCount), c.sumOfCoupling(minSupportCount)));
         });
     }
 }

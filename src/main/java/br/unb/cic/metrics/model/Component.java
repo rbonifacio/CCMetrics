@@ -15,7 +15,7 @@ public class Component {
         }
 
         public String export(Integer changes) {
-            return target + ", " + supportCount + ", " + (float)supportCount / changes;
+            return target + "; " + supportCount + "; " + (float)supportCount / changes;
         }
 
         @Override
@@ -48,6 +48,10 @@ public class Component {
         this.dependencies = new HashMap<>();
     }
 
+    public Object getName() {
+        return name;
+    }
+
     public void reportChange() {
         changes++;
     }
@@ -60,7 +64,7 @@ public class Component {
 
     public List<String> listDependencies() {
         List<String> res = new ArrayList<>();
-        dependencies.keySet().forEach(k -> res.add(String.format("%s, %s", name, dependencies.get(k).export(changes))));
+        dependencies.keySet().forEach(k -> res.add(String.format("%s; %s", name, dependencies.get(k).export(changes))));
         return res;
     }
 

@@ -7,5 +7,5 @@ import java.util.Set;
 
 public interface PrettyPrinter {
     void exportComponentChanges(HashMap<String, Set<String>> changeSet);
-    void exportComponentDependencies(HashMap<String, Component> components);
+    void exportComponentDependencies(HashMap<String, Component> components, int minSupportCount);
 }
