@@ -51,6 +51,12 @@ public class Component {
         changes++;
     }
 
+    public List<DependencyInfo> listDependencyInfo() {
+        List<DependencyInfo> res = new ArrayList<>();
+        dependencies.values().forEach(d -> res.add(getDependencyInfo(d.target)));
+        return res;
+    }
+
     public List<String> listDependencies() {
         List<String> res = new ArrayList<>();
         dependencies.keySet().forEach(k -> res.add(String.format("%s, %s", name, dependencies.get(k).export(changes))));
@@ -77,6 +83,14 @@ public class Component {
         toRemove.forEach(k -> dependencies.remove(k));
     }
 
+    public DependencyInfo getDependencyInfo(String target) {
+        if(dependencies.containsKey(target)) {
+            Dependency d = dependencies.get(target);
+
+            return new DependencyInfo(name, d.target, d.supportCount, (double)d.supportCount/changes);
+        }
+        return null;
+    }
 
     @Override
     public boolean equals(Object o) {

@@ -1,6 +1,7 @@
 package br.unb.cic.metrics.controller;
 
 import br.unb.cic.metrics.model.Component;
+import br.unb.cic.metrics.model.DependencyInfo;
 import br.unb.cic.metrics.pp.PrettyPrinter;
 import com.google.common.base.Stopwatch;
 
@@ -10,8 +11,9 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
-public class ClassDependencyBuilder {
+public class DependencyManager {
 
     private static final int DEFAULT_MIN_SUPPORT_COUNT = 5;
     private static final double DEFAULT_MIN_CONFIDENCE = 0.5;
@@ -86,7 +88,8 @@ public class ClassDependencyBuilder {
 
 
 
-    private void buildDependencies(HashMap<String, Set<String>> changeSet) {
+    // make it package for test purpose only.
+    void buildDependencies(HashMap<String, Set<String>> changeSet) {
         System.out.print("Building dependencies");
         Stopwatch stopwatch = Stopwatch.createStarted();
 
@@ -125,6 +128,59 @@ public class ClassDependencyBuilder {
         pp.exportComponentChanges(componentChanges);
         pp.exportComponentDependencies(components);
     }
+
+    public DependencyInfo getDependency(String c1, String c2) {
+        if(components.containsKey(c1)) {
+            return components.get(c1).getDependencyInfo(c2);
+        }
+        return null;
+    }
+
+    public Set<String> setOfCoupledClasses(String c) {
+        return setOfCoupledClasses(c, minSupportCount);
+    }
+    
+    public Set<String> setOfCoupledClasses(String c, int minSupportCount) {
+        if(components.containsKey(c)) {
+            Component cmp =  components.get(c);
+
+            return cmp.listDependencyInfo().stream()
+                    .filter(d -> d.getSupportCount() >= minSupportCount)
+                    .map(f -> f.getTarget())
+                    .collect(Collectors.toSet());
+        }
+        return null;
+    }
+
+    public int numberOfCoupledClasses(String c){
+        return numberOfCoupledClasses(c, minSupportCount);
+    }
+
+    public int numberOfCoupledClasses(String c, int minSupportCount) {
+        Set<String> classes = setOfCoupledClasses(c, minSupportCount);
+
+        if(classes != null) {
+            return classes.size();
+        }
+        return 0;
+    }
+
+    public int sumOfCoupling(String c) {
+        return sumOfCoupling(c, minSupportCount);
+    }
+
+    public int sumOfCoupling(String c, int minSupportCount) {
+        if(components.containsKey(c)) {
+            List<DependencyInfo> deps = components.get(c).listDependencyInfo();
+
+            return deps.stream()
+                    .filter(d -> d.getSupportCount() >= minSupportCount)
+                    .map(f -> f.getSupportCount())
+                    .reduce(0, Integer::sum);
+        }
+        return 0;
+    }
+
 
     public void setProjectName(String projectName) {
         this.projectName = projectName;

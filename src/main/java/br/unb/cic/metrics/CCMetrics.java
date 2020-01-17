@@ -1,6 +1,6 @@
 package br.unb.cic.metrics;
 
-import br.unb.cic.metrics.controller.ClassDependencyBuilder;
+import br.unb.cic.metrics.controller.DependencyManager;
 import br.unb.cic.metrics.pp.DefaultPrinter;
 
 import java.util.*;
@@ -13,11 +13,11 @@ public class CCMetrics {
     public static void main(String args[]) {
         try {
             HashMap<String, String> cmds = parseProgramArgs(args);
-            ClassDependencyBuilder builder = new ClassDependencyBuilder();
+            DependencyManager builder = new DependencyManager();
 
             if(cmds.containsKey(MODE)) {
                 if(cmds.get(MODE).equals("f")) {
-                    builder.setMode(ClassDependencyBuilder.Mode.FINE_GRAINED);
+                    builder.setMode(DependencyManager.Mode.FINE_GRAINED);
                 }
             }
 
