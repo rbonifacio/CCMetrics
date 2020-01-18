@@ -17,7 +17,7 @@ public class DependencyManager {
     private static final int DEFAULT_MIN_SUPPORT_COUNT = 5;
     private static final double DEFAULT_MIN_CONFIDENCE = 0.5;
 
-        private static final String PATTERN__COMMIT = "commit: (\\w++)";
+        private static final String PATTERN__COMMIT = "commit: (\\w++) (\\w++)";
     private static final String PATTERN__COMPONENT_COARSE_GRAINED =  "(.*)\\.java\\/\\[CN]\\/(\\w++)\\/.*";
     private static final String PATTERN__COMPONENT_FINE_GRAINED =  "(.*)\\.java\\/\\[CN]\\/(\\w++)\\/(\\[CT]|\\[MT])\\/(.*)\\/.*";
 
@@ -62,7 +62,7 @@ public class DependencyManager {
             Matcher m = commitPattern.matcher(s);
             if(m.matches()) {
                 countCommit++;
-                hash = m.group(1);
+                hash = m.group(1) + "::" + m.group(2);
                 // just being defensive here. it is not expected
                 // to find the same hash twice in the log file.
                 if(!changeSet.containsKey(hash)) {

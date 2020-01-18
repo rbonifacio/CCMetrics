@@ -45,7 +45,7 @@ public class DefaultPrinter implements PrettyPrinter {
     @Override
     public void exportComponentChanges(HashMap<String, Set<String>> changeSet) {
         changeSet.keySet().forEach(k -> {
-            changeSet.get(k).forEach(c -> out1.println(String.format("%s; %s", k, c)));
+            changeSet.get(k).forEach(c -> out1.println(String.format("%s; %s", k, c.replace("::", "; "))));
         });
     }
 
