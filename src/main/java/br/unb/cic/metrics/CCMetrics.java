@@ -3,6 +3,9 @@ package br.unb.cic.metrics;
 import br.unb.cic.metrics.controller.DependencyManager;
 import br.unb.cic.metrics.pp.DefaultPrinter;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
@@ -34,8 +37,14 @@ public class CCMetrics {
                }
             });
         }
-        catch(Exception e) {
-            e.printStackTrace();
+        catch(Throwable e) {
+            try {
+                PrintStream logger = new PrintStream(new File("error.txt"));
+                e.printStackTrace(logger);
+            }
+            catch(IOException ioe) {
+                ioe.printStackTrace();
+            }
         }
     }
 
