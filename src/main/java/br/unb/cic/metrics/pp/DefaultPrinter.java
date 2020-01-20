@@ -11,19 +11,23 @@ import java.util.Set;
 public class DefaultPrinter implements PrettyPrinter {
     private PrintStream out1, out2, out3;
 
-    public DefaultPrinter() {
+    private String name;
+
+    public DefaultPrinter(String name) {
+        this.name = name;
         out1 = System.out;
         out2 = System.out;
         out3 = System.out;
     }
 
-    public DefaultPrinter(String file) {
+    public DefaultPrinter(String name, String file) {
         try {
+            this.name = name;
             File f = new File(file);
             if(f.exists() && f.isDirectory()) {
-                out1 = new PrintStream(f + "/change-history.csv");
-                out2 = new PrintStream(f + "/dependencies.csv");
-                out3 = new PrintStream(f + "/metrics.csv");
+                out1 = new PrintStream(f + "/" + name + "-change-history.csv");
+                out2 = new PrintStream(f + "/" + name + "-dependencies.csv");
+                out3 = new PrintStream(f + "/" + name + "-metrics.csv");
             }
             else {
                 defaultInit();
@@ -45,7 +49,7 @@ public class DefaultPrinter implements PrettyPrinter {
     @Override
     public void exportComponentChanges(HashMap<String, Set<String>> changeSet) {
         changeSet.keySet().forEach(k -> {
-            changeSet.get(k).forEach(c -> out1.println(String.format("%s; %s", k, c.replace("::", "; "))));
+            changeSet.get(k).forEach(c -> out1.println(String.format("%s; %s; %s", name, k, c.replace("::", "; "))));
         });
     }
 
@@ -54,9 +58,9 @@ public class DefaultPrinter implements PrettyPrinter {
         components.values().forEach(c -> {
             List<String> deps = c.listDependencies();
             if(deps.size() > 0) {
-                deps.forEach(s -> out2.println(s));
+                deps.forEach(s -> out2.println(name + "; " + s));
             }
-            out3.println(String.format("%s; %d; %d", c.getName(), c.numberOfCoupledComponents(minSupportCount), c.sumOfCoupling(minSupportCount)));
+            out3.println(String.format("%s; %s; %d; %d", name, c.getName(), c.numberOfCoupledComponents(minSupportCount), c.sumOfCoupling(minSupportCount)));
         });
     }
 }
